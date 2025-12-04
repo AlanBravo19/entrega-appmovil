@@ -5,6 +5,13 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
+    <fragment
+        android:id="@+id/composeLoginFragment"
+        android:name="com.example.appmovil.ui.ui.ui.login.ComposeLoginFragment"
+        android:label="LoginCompose"
+        tools:layout="@layout/empty_container"/>
+
+
     <!-- LOGIN -->
     <fragment
         android:id="@+id/loginFragment"

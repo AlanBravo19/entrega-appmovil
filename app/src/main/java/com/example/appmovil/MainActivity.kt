@@ -1,20 +1,183 @@
 package com.example.appmovil
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity // Importante: Cambiamos a AppCompatActivity
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material3.MaterialTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
-// Eliminamos todas las importaciones de Compose (ComponentActivity, setContent, Composable, etc.)
+import com.google.gson.Gson
+import java.net.URLEncoder
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
-class MainActivity : AppCompatActivity() {
+import com.example.appmovil.data.SessionManager
+
+import com.example.appmovil.ui.login.LoginScreenCompose
+import com.example.appmovil.ui.login.LoginViewModel
+import com.example.appmovil.ui.login.RegisterScreenCompose
+import com.example.appmovil.ui.login.RegisterViewModel
+
+import com.example.appmovil.ui.home.HomeScreenCompose
+import com.example.appmovil.ui.home.HomeViewModel
+
+import com.example.appmovil.ui.profile.ProfileScreenCompose
+import com.example.appmovil.ui.profile.ProfileViewModel
+
+import com.example.appmovil.ui.detail.ProductDetailScreenCompose
+import com.example.appmovil.ui.detail.ProductDetailViewModel
+
+import com.example.appmovil.ui.cart.CartScreenCompose
+import com.example.appmovil.ui.ui.domain.model.Product
+
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Llama a super.onCreate y maneja la restauración del estado si es necesario
         super.onCreate(savedInstanceState)
 
-        // CRÍTICO: Carga la interfaz XML (activity_main.xml)
-        // Este layout contiene el NavHostFragment que a su vez carga tu LoginFragment.
-        setContentView(R.layout.activity_main)
+        setContent {
+
+            MaterialTheme {
+
+                val navController = rememberNavController()
+                val session = SessionManager(this)
+
+                NavHost(
+                    navController = navController,
+                    startDestination = "login"
+                ) {
+
+                    // ============================================
+                    // LOGIN (MVVM)
+                    // ============================================
+                    composable("login") {
+                        val vm = LoginViewModel(session)
+
+                        LoginScreenCompose(
+                            viewModel = vm,
+                            onLoginSuccess = {
+                                navController.navigate("home") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            },
+                            onGoRegister = { navController.navigate("register") }
+                        )
+                    }
+
+                    // ============================================
+                    // REGISTRO (MVVM)
+                    // ============================================
+                    composable("register") {
+                        val vm = RegisterViewModel(session)
+
+                        RegisterScreenCompose(
+                            viewModel = vm,
+                            onRegisterSuccess = { navController.navigate("login") },
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    // ============================================
+                    // HOME (MVVM)
+                    // ============================================
+                    composable("home") {
+
+                        val homeVM = HomeViewModel()
+
+                        HomeScreenCompose(
+                            viewModel = homeVM,
+
+                            onLogout = {
+                                session.logout()
+                                navController.navigate("login") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            },
+
+                            onProductClick = { product ->
+                                val json = Gson().toJson(product)
+                                val encoded = URLEncoder.encode(
+                                    json,
+                                    StandardCharsets.UTF_8.toString()
+                                )
+                                navController.navigate("productDetail/$encoded")
+                            },
+
+                            onCartClick = {
+                                val userId = session.getEmail() ?: "guest"
+                                navController.navigate("cart/$userId")
+                            },
+
+                            onHistoryClick = {
+                                // Próximo paso
+                            },
+
+                            onUserClick = {
+                                navController.navigate("profile")
+                            }
+                        )
+                    }
+
+                    // ============================================
+                    // PERFIL DEL USUARIO (MVVM)
+                    // ============================================
+                    composable("profile") {
+
+                        val vm = ProfileViewModel(session)
+
+                        ProfileScreenCompose(
+                            viewModel = vm,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    // ============================================
+                    // DETALLE DE PRODUCTO
+                    // ============================================
+                    composable("productDetail/{json}") { entry ->
+
+                        val encodedJson = entry.arguments?.getString("json") ?: ""
+                        val decoded = URLDecoder.decode(
+                            encodedJson,
+                            StandardCharsets.UTF_8.toString()
+                        )
+
+                        val product = Gson().fromJson(decoded, Product::class.java)
+                        val vm = ProductDetailViewModel()
+                        val userId = session.getEmail() ?: "guest"
+
+                        ProductDetailScreenCompose(
+                            viewModel = vm,
+                            product = product,
+                            currentUserId = userId,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    // ============================================
+                    // CARRITO
+                    // ============================================
+                    composable("cart/{userId}") { entry ->
+
+                        val userId = entry.arguments?.getString("userId") ?: "guest"
+
+                        CartScreenCompose(
+                            userId = userId,
+                            onBack = { navController.popBackStack() },
+                            onPay = {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Pago realizado",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        )
+                    }
+                }
+            }
+        }
     }
 }
-
-// Eliminamos las funciones @Composable (Greeting y GreetingPreview) ya que no usaremos Compose aquí.

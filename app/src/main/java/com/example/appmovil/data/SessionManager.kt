@@ -1,4 +1,4 @@
-package com.example.appmovil.ui.ui.data.data.dataU
+package com.example.appmovil.data
 
 import android.content.Context
 
@@ -23,14 +23,14 @@ class SessionManager(context: Context) {
             .apply()
     }
 
-    fun updateUser(name: String, email: String, address: String, phone: String) {
+    fun updateUser(name: String, address: String, phone: String) {
         prefs.edit()
             .putString("user_name", name)
-            .putString("user_email", email)
             .putString("user_address", address)
             .putString("user_phone", phone)
             .apply()
     }
+
 
     fun getName() = prefs.getString("user_name", "")
     fun getEmail() = prefs.getString("user_email", "")

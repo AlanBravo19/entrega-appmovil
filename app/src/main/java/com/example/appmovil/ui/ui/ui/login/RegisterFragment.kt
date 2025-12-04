@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.appmovil.R
 import com.example.appmovil.databinding.FragmentRegisterBinding
-import com.example.appmovil.ui.ui.data.data.dataU.SessionManager
+import com.example.appmovil.data.SessionManager
 
 class RegisterFragment : Fragment() {
 

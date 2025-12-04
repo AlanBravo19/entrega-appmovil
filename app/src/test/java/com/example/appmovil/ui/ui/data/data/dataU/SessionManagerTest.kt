@@ -2,6 +2,7 @@ package com.example.appmovil.ui.ui.data.data.dataU
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.example.appmovil.data.SessionManager
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

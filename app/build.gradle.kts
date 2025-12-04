@@ -5,6 +5,8 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
 }
 
+
+
 android {
     namespace = "com.example.appmovil"
     compileSdk = 36
@@ -55,7 +57,27 @@ android {
     }
 }
 
+
+
+
 dependencies {
+    implementation("androidx.compose.material3:material3:1.2.1")
+
+
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Navigation Compose
+    implementation("androidx.navigation:navigation-compose:2.7.2")
+
+// Material3
+    implementation("androidx.compose.material3:material3:1.2.1")
+
+// Compose UI
+    implementation("androidx.compose.ui:ui:1.5.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.5.0")
+
 
     // CORE
     implementation(libs.androidx.core.ktx)
