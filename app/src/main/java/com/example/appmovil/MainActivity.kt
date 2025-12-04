@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -31,7 +32,7 @@ import com.example.appmovil.ui.detail.ProductDetailViewModel
 
 import com.example.appmovil.ui.cart.CartScreenCompose
 import com.example.appmovil.ui.ui.domain.model.Product
-import com.example.appmovil.ui.theme.AppMovilTheme   // ← AQUI USAMOS TU TEMA VERDE
+import com.example.appmovil.ui.theme.AppMovilTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -40,7 +41,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            // ============ USAMOS EL TEMA VERDE PERSONALIZADO ============
             AppMovilTheme {
 
                 val navController = rememberNavController()
@@ -51,10 +51,9 @@ class MainActivity : ComponentActivity() {
                     startDestination = "login"
                 ) {
 
-                    // ============================================
-                    // LOGIN (MVVM)
-                    // ============================================
+                    // LOGIN
                     composable("login") {
+
                         val vm = LoginViewModel(session)
 
                         LoginScreenCompose(
@@ -68,10 +67,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    // ============================================
-                    // REGISTRO (MVVM)
-                    // ============================================
+                    // REGISTRO
                     composable("register") {
+
                         val vm = RegisterViewModel(session)
 
                         RegisterScreenCompose(
@@ -81,12 +79,10 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    // ============================================
-                    // HOME (MVVM)
-                    // ============================================
+                    // HOME
                     composable("home") {
 
-                        val homeVM = HomeViewModel()
+                        val homeVM: HomeViewModel = viewModel()
 
                         HomeScreenCompose(
                             viewModel = homeVM,
@@ -112,9 +108,7 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("cart/$userId")
                             },
 
-                            onHistoryClick = {
-                                // Próxima pantalla
-                            },
+                            onHistoryClick = {},
 
                             onUserClick = {
                                 navController.navigate("profile")
@@ -122,9 +116,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    // ============================================
-                    // PERFIL DEL USUARIO
-                    // ============================================
+                    // PERFIL
                     composable("profile") {
 
                         val vm = ProfileViewModel(session)
@@ -135,9 +127,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    // ============================================
-                    // DETALLE DE PRODUCTO
-                    // ============================================
+                    // DETALLE PRODUCTO
                     composable("productDetail/{json}") { entry ->
 
                         val encodedJson = entry.arguments?.getString("json") ?: ""
@@ -147,20 +137,17 @@ class MainActivity : ComponentActivity() {
                         )
 
                         val product = Gson().fromJson(decoded, Product::class.java)
-                        val vm = ProductDetailViewModel()
-                        val userId = session.getEmail() ?: "guest"
+                        val vm: ProductDetailViewModel = viewModel()
 
                         ProductDetailScreenCompose(
                             viewModel = vm,
                             product = product,
-                            currentUserId = userId,
+                            currentUserId = session.getEmail() ?: "guest",
                             onBack = { navController.popBackStack() }
                         )
                     }
 
-                    // ============================================
                     // CARRITO
-                    // ============================================
                     composable("cart/{userId}") { entry ->
 
                         val userId = entry.arguments?.getString("userId") ?: "guest"

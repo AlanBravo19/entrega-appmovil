@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.appmovil.ui.ui.domain.model.Product
@@ -21,10 +21,10 @@ fun HomeScreenCompose(
     onProductClick: (Product) -> Unit,
     onCartClick: () -> Unit,
     onHistoryClick: () -> Unit,
-    onUserClick: () -> Unit    // <-- YA INCLUIDO
+    onUserClick: () -> Unit
 ) {
 
-    val products = viewModel.products.value
+    val products by viewModel.products.collectAsState()
 
     Scaffold(
         topBar = {
@@ -33,16 +33,16 @@ fun HomeScreenCompose(
 
                 navigationIcon = {
                     IconButton(onClick = { onLogout() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Salir")
+                        Icon(Icons.Default.ArrowBack, "Salir")
                     }
                 },
 
                 actions = {
                     IconButton(onClick = { onUserClick() }) {
-                        Icon(Icons.Default.Person, contentDescription = "Usuario")
+                        Icon(Icons.Default.Person, "Usuario")
                     }
                     IconButton(onClick = { onCartClick() }) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Carrito")
+                        Icon(Icons.Default.ShoppingCart, "Carrito")
                     }
                 }
             )
