@@ -1,12 +1,5 @@
 [
-  {
-    "id": "FR001",
-    "name": "Manzanas Fuji",
-    "description": "Manzanas Fuji crujientes y dulces, cultivadas en el Valle del Maule. Perfectas para meriendas saludables o como ingrediente en postres.",
-    "price": 1200.0,
-    "unit": "Kg",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg"
-  },
+
   {
     "id": "FR002",
     "name": "Naranjas Valencia",
