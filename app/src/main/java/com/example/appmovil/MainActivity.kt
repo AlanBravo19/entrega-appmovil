@@ -40,15 +40,21 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppMovilTheme {
-                val navController = rememberNavController()
+
                 val session = SessionManager(this)
+                val navController = rememberNavController()
+
+                // 🔥 SI YA ESTÁ LOGEADO → IR DIRECTO AL HOME
+                val startDestination = if (session.isLoggedIn()) "home" else "login"
 
                 NavHost(
                     navController = navController,
-                    startDestination = "login"
+                    startDestination = startDestination
                 ) {
 
+                    // -------------------------------
                     // LOGIN
+                    // -------------------------------
                     composable("login") {
                         val vm = LoginViewModel(session)
                         LoginScreenCompose(
@@ -62,17 +68,25 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    // -------------------------------
                     // REGISTER
+                    // -------------------------------
                     composable("register") {
                         val vm = RegisterViewModel(session)
                         RegisterScreenCompose(
                             viewModel = vm,
-                            onRegisterSuccess = { navController.navigate("login") },
+                            onRegisterSuccess = {
+                                navController.navigate("login") {
+                                    popUpTo("register") { inclusive = true }
+                                }
+                            },
                             onBack = { navController.popBackStack() }
                         )
                     }
 
+                    // -------------------------------
                     // HOME
+                    // -------------------------------
                     composable("home") {
                         val homeVM: HomeViewModel = viewModel()
                         HomeScreenCompose(
@@ -80,7 +94,7 @@ class MainActivity : ComponentActivity() {
                             onLogout = {
                                 session.logout()
                                 navController.navigate("login") {
-                                    popUpTo("login") { inclusive = true }
+                                    popUpTo("home") { inclusive = true }
                                 }
                             },
                             onProductClick = { product ->
@@ -95,11 +109,15 @@ class MainActivity : ComponentActivity() {
                             onHistoryClick = {
                                 navController.navigate("orderHistory")
                             },
-                            onUserClick = { navController.navigate("profile") }
+                            onUserClick = {
+                                navController.navigate("profile")
+                            }
                         )
                     }
 
+                    // -------------------------------
                     // PROFILE
+                    // -------------------------------
                     composable("profile") {
                         val vm = ProfileViewModel(session)
                         ProfileScreenCompose(
@@ -108,12 +126,15 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    // -------------------------------
                     // PRODUCT DETAIL
+                    // -------------------------------
                     composable("productDetail/{json}") { entry ->
                         val encodedJson = entry.arguments?.getString("json") ?: ""
                         val decoded = URLDecoder.decode(encodedJson, StandardCharsets.UTF_8.toString())
                         val product = Gson().fromJson(decoded, Product::class.java)
                         val vm: ProductDetailViewModel = viewModel()
+
                         ProductDetailScreenCompose(
                             viewModel = vm,
                             product = product,
@@ -122,7 +143,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    // -------------------------------
                     // CART
+                    // -------------------------------
                     composable("cart/{userId}") { entry ->
                         val userId = entry.arguments?.getString("userId") ?: "guest"
                         CartScreenCompose(
@@ -132,7 +155,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    // -------------------------------
                     // ORDER SUMMARY
+                    // -------------------------------
                     composable(
                         route = "orderSummary/{total}/{productsEncoded}/{userId}",
                         arguments = listOf(
@@ -140,10 +165,10 @@ class MainActivity : ComponentActivity() {
                             navArgument("productsEncoded") { type = NavType.StringType },
                             navArgument("userId") { type = NavType.StringType }
                         )
-                    ) { backStackEntry ->
-                        val total = backStackEntry.arguments?.getString("total") ?: "0"
-                        val productsEncoded = backStackEntry.arguments?.getString("productsEncoded") ?: ""
-                        val userId = backStackEntry.arguments?.getString("userId") ?: "guest"
+                    ) { entry ->
+                        val total = entry.arguments?.getString("total") ?: "0"
+                        val productsEncoded = entry.arguments?.getString("productsEncoded") ?: ""
+                        val userId = entry.arguments?.getString("userId") ?: "guest"
 
                         OrderSummaryScreen(
                             navController = navController,
@@ -153,7 +178,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    // -------------------------------
                     // PURCHASE COMPLETE
+                    // -------------------------------
                     composable(
                         route = "purchase_complete/{total}/{products}/{userId}",
                         arguments = listOf(
@@ -184,7 +211,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    // -------------------------------
                     // ORDER HISTORY
+                    // -------------------------------
                     composable("orderHistory") {
                         OrderHistoryScreen(
                             session = session,

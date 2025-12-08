@@ -16,6 +16,10 @@ open class SessionManager(private val context: Context?) {
     private val prefs = context?.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
     private val gson = Gson()
 
+
+    // USUARIO
+
+
     fun saveUser(
         name: String,
         email: String,
@@ -49,19 +53,36 @@ open class SessionManager(private val context: Context?) {
 
     fun isLoggedIn() = prefs?.getBoolean("is_logged_in", false) ?: false
 
+    //  NO borra cuenta, solo cierra sesión
     fun logout() {
-        prefs?.edit()?.clear()?.apply()
+        prefs?.edit()
+            ?.putBoolean("is_logged_in", false)
+            ?.apply()
+    }
+
+
+    // HISTORIAL POR USUARIO
+
+
+    private fun getOrdersKey(): String {
+        val email = getEmail()
+        return "orders_$email" //  Clave única por usuario
     }
 
     fun saveOrder(order: OrderHistoryItem) {
+        val key = getOrdersKey()
         val currentOrders = getOrders().toMutableList()
         currentOrders.add(order)
+
         val json = gson.toJson(currentOrders)
-        prefs?.edit()?.putString("orders", json)?.apply()
+
+        prefs?.edit()?.putString(key, json)?.apply()
     }
 
     fun getOrders(): List<OrderHistoryItem> {
-        val json = prefs?.getString("orders", null)
+        val key = getOrdersKey()
+        val json = prefs?.getString(key, null)
+
         return if (json != null) {
             val type = object : TypeToken<List<OrderHistoryItem>>() {}.type
             gson.fromJson(json, type)

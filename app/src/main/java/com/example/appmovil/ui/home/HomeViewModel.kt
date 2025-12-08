@@ -19,7 +19,7 @@ class HomeViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    // URL limpia correcta
+
     private val baseUrl =
         "https://raw.githubusercontent.com/AlanBravo19/entrega-appmovil/main/productos.json"
 
@@ -36,7 +36,7 @@ class HomeViewModel : ViewModel() {
             try {
                 _isLoading.value = true
 
-                // Agregamos marca única para evitar cache SIEMPRE
+                //  evitar cache SIEMPRE
                 val finalUrl = "$baseUrl?timestamp=${System.nanoTime()}"
 
                 val url = URL(finalUrl)
