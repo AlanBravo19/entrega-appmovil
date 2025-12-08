@@ -25,6 +25,7 @@ fun HomeScreenCompose(
 ) {
 
     val products by viewModel.products.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Scaffold(
         topBar = {
@@ -32,16 +33,16 @@ fun HomeScreenCompose(
                 title = { Text("Catálogo de Productos") },
 
                 navigationIcon = {
-                    IconButton(onClick = { onLogout() }) {
+                    IconButton(onClick = onLogout) {
                         Icon(Icons.Default.ArrowBack, "Salir")
                     }
                 },
 
                 actions = {
-                    IconButton(onClick = { onUserClick() }) {
+                    IconButton(onClick = onUserClick) {
                         Icon(Icons.Default.Person, "Usuario")
                     }
-                    IconButton(onClick = { onCartClick() }) {
+                    IconButton(onClick = onCartClick) {
                         Icon(Icons.Default.ShoppingCart, "Carrito")
                     }
                 }
@@ -51,23 +52,44 @@ fun HomeScreenCompose(
 
         Column(modifier = Modifier.padding(padding)) {
 
+            // 🔵 Botón Historial
             Button(
-                onClick = { onHistoryClick() },
+                onClick = onHistoryClick,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text("Historial de Compras")
             }
 
-            LazyColumn(
+            // 🔄 Botón Actualizar Catálogo
+            Button(
+                onClick = { viewModel.refreshProducts() },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
-                items(products) { product ->
-                    ProductCardCompose(
-                        product = product,
-                        onClick = { onProductClick(product) }
-                    )
+                Text("Actualizar catálogo")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // ⏳ Mostrar loading durante la descarga
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(modifier = Modifier.padding(32.dp))
+                }
+            } else {
+                // 🟢 Lista de productos
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp)
+                ) {
+                    items(products) { product ->
+                        ProductCardCompose(
+                            product = product,
+                            onClick = { onProductClick(product) }
+                        )
+                    }
                 }
             }
         }

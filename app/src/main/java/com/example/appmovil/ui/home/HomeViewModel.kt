@@ -16,27 +16,49 @@ class HomeViewModel : ViewModel() {
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> = _products
 
-    private val jsonUrl = "https://raw.githubusercontent.com/AlanBravo19/appmovil-con-jetpack/refs/heads/main/productos.json"
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    // URL limpia correcta
+    private val baseUrl =
+        "https://raw.githubusercontent.com/AlanBravo19/entrega-appmovil/main/productos.json"
 
     init {
+        loadProducts()
+    }
+
+    fun refreshProducts() {
         loadProducts()
     }
 
     private fun loadProducts() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val url = URL(jsonUrl)
+                _isLoading.value = true
+
+                // Agregamos marca única para evitar cache SIEMPRE
+                val finalUrl = "$baseUrl?timestamp=${System.nanoTime()}"
+
+                val url = URL(finalUrl)
                 val conn = url.openConnection() as HttpURLConnection
+
                 conn.requestMethod = "GET"
+                conn.useCaches = false
+                conn.defaultUseCaches = false
+
+                conn.setRequestProperty("Cache-Control", "no-store, no-cache, must-revalidate")
+                conn.setRequestProperty("Pragma", "no-cache")
+                conn.setRequestProperty("Expires", "0")
 
                 val json = conn.inputStream.bufferedReader().readText()
 
                 val list = Gson().fromJson(json, Array<Product>::class.java).toList()
-
                 _products.value = list
 
             } catch (e: Exception) {
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
         }
     }
