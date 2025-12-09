@@ -1,4 +1,12 @@
 [
+   {
+    "id": "FR002",
+    "name": "Naranjas Valencia",
+    "description": "Jugosas y ricas en vitamina C, ideales para zumos frescos.",
+    "price": 1000.0,
+    "unit": "Kg",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Orange-Fruit-Pieces.jpg"
+  },
 
   {
     "id": "FR002",
