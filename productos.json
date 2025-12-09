@@ -1,11 +1,11 @@
 [
    {
-    "id": "FR002",
-    "name": "Naranjas Valencia",
-    "description": "Jugosas y ricas en vitamina C, ideales para zumos frescos.",
-    "price": 1000.0,
+    "id": "FR004",
+    "name": "Manzanas Fuji",
+    "description": "Manzanas crujientes y dulces, perfectas para comer o hacer postres.",
+    "price": 1200.0,
     "unit": "Kg",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Orange-Fruit-Pieces.jpg"
+    "imageUrl": "https://freshmate.cl/cdn/shop/files/manzanas_fuji_en_bowl_de_madera_21_11zon.webp?v=1724716431&width=713"
   },
 
   {
